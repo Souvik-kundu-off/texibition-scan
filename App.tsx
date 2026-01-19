@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { ExcelRow, ColumnMapping, ScanLog, ScanStatus, VerificationResult } from './types';
-import { analyzeColumns } from './services/geminiService';
+import { analyzeColumns, isAiEnabled } from './services/geminiService';
 import Dashboard from './components/Dashboard';
 import Scanner from './components/Scanner';
 import ResultModal from './components/ResultModal';
-import { UploadCloud, FileSpreadsheet, Sparkles, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { UploadCloud, FileSpreadsheet, Sparkles, Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 // Hardcoded Credentials Mapping
 const VALID_CREDENTIALS: { [key: string]: string } = {
@@ -375,6 +375,7 @@ const App: React.FC = () => {
   }
 
   // -- Render: Main App --
+  const aiStatus = isAiEnabled();
 
   if (excelData.length === 0) {
     return (
@@ -438,12 +439,8 @@ const App: React.FC = () => {
 
               <div className="mt-6 flex justify-center gap-4 text-xs text-gray-500">
                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>Auto-Mapping</span>
-                 </div>
-                 <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span>Smart Scan</span>
+                    <div className={`w-2 h-2 rounded-full ${aiStatus ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <span>{aiStatus ? "AI Connected" : "AI Offline (Manual Mapping)"}</span>
                  </div>
               </div>
            </div>
@@ -467,10 +464,18 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-4 text-sm text-gray-400">
-                   <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-gray-700/50 rounded-full border border-gray-700">
-                      <Sparkles size={14} className="text-yellow-400"/>
-                      <span>AI Active</span>
-                   </div>
+                   {aiStatus ? (
+                       <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-gray-700/50 rounded-full border border-gray-700">
+                          <Sparkles size={14} className="text-yellow-400"/>
+                          <span>AI Active</span>
+                       </div>
+                   ) : (
+                       <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-red-900/30 rounded-full border border-red-800/50">
+                          <AlertCircle size={14} className="text-red-400"/>
+                          <span className="text-red-200">AI Offline</span>
+                       </div>
+                   )}
+                   
                    <button onClick={() => setIsAuthenticated(false)} className="hover:text-white transition-colors">
                       Sign Out
                    </button>

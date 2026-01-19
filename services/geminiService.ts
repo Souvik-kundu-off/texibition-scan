@@ -1,16 +1,22 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ExcelRow, ColumnMapping } from "../types";
 
+// User provided key
+const PROVIDED_KEY = 'AIzaSyDXFFzWbvqeBD1JDTORb2yYb87O855W_V0';
+
 // Safe API key extraction
 const getApiKey = () => {
   try {
-    return process.env.API_KEY || '';
+    // Priority: Environment Variable -> Provided Key -> Empty
+    return process.env.API_KEY || PROVIDED_KEY;
   } catch (e) {
-    return '';
+    return PROVIDED_KEY;
   }
 };
 
 const apiKey = getApiKey();
+
+export const isAiEnabled = () => !!apiKey;
 
 // Initialize client only if key exists (handled gracefully in caller)
 const getAiClient = () => {
