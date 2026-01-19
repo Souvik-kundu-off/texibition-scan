@@ -1,0 +1,7 @@
+{
+  "name": "Texibition Scan",
+  "description": "A smart QR code verification tool that cross-references scanned codes with uploaded Excel sheets. Uses Gemini to intelligently map data columns.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
